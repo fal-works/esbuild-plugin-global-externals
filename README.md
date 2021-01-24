@@ -1,4 +1,4 @@
-# esbuild-helper
+# esbuild-plugin-global-externals
 
 [esbuild](https://esbuild.github.io/) plugin for replacing imports with global variables.
 
