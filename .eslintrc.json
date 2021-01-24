@@ -1,0 +1,56 @@
+// see also: https://eslint.org/docs/user-guide/configuring
+{
+  "ignorePatterns": ["/lib/"],
+
+  // config common to all
+  "env": {
+    "es6": true,
+    "es2017": true,
+    "node": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2019,
+    "sourceType": "module"
+  },
+
+  "overrides": [
+    // config with basic rules
+    {
+      "files": ["src/**/*.ts"],
+      "extends": ["eslint:recommended", "prettier"]
+    },
+
+    // config for TypeScript
+    {
+      "files": ["src/**/*.ts"],
+      "plugins": ["@typescript-eslint"],
+      "parser": "@typescript-eslint/parser",
+      "extends": [
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",
+        "prettier/@typescript-eslint"
+      ],
+      "rules": {
+        "no-fallthrough": "off" // already checked by TypeScript
+      }
+    },
+
+    // config just for pre-formatting purpose
+    {
+      "files": ["**/*.js"],
+      "rules": {
+        "lines-around-comment": [
+          "error",
+          {
+            "beforeBlockComment": true,
+            "beforeLineComment": true,
+            "allowBlockStart": true,
+            "allowObjectStart": true,
+            "allowArrayStart": true,
+            "allowClassStart": true
+          }
+        ]
+      }
+    }
+  ]
+}

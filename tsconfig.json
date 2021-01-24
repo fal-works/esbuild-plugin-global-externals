@@ -1,0 +1,32 @@
+// See also: https://aka.ms/tsconfig.json
+{
+  "include": ["src/"],
+
+  "compilerOptions": {
+    /* Basic Options */
+    "target": "ES2019",
+    "lib": ["ES2019"],
+    "module": "ES2015",
+    "outDir": "lib",
+    "isolatedModules": true,
+    "declaration": true,
+    "declarationMap": true,
+
+    /* Strict Type-Checking Options */
+    "strict": true,
+
+    /* Additional Checks */
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+
+    /* Module Resolution Options */
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+
+    /* Advanced Options */
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmitOnError": true
+  }
+}
