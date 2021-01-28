@@ -6,6 +6,7 @@ devDependencies:
   eslint: 7.18.0
   eslint-config-prettier: 7.2.0_eslint@7.18.0
   prettier: 2.2.1
+  rimraf: 3.0.2
   typescript: 4.1.3
 lockfileVersion: 5.2
 packages:
@@ -1084,4 +1085,5 @@ specifiers:
   eslint: 7.18.0
   eslint-config-prettier: ^7.2.0
   prettier: ^2.2.1
+  rimraf: ^3.0.2
   typescript: ^4.1.3
