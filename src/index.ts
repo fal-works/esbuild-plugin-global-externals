@@ -66,3 +66,5 @@ const mapperFromTable = (globals: Record<string, string>): GlobalsMapper => ({
 export const globalExternals = (
   globals: Record<string, string>
 ): esbuild.Plugin => globalExternalsWithRegExp(mapperFromTable(globals));
+
+export default globalExternals;
