@@ -1,4 +1,5 @@
 import * as esbuild from "esbuild";
+import type { ModuleType, Options } from "./options";
 
 const PLUGIN_NAME = "global-externals";
 
@@ -22,14 +23,39 @@ export type GlobalsMapper = {
 };
 
 /**
+ * Returns a function that determines module type for any specific module path.
+ */
+const createGetModuleType = (options?: Options) => {
+  const moduleType = options?.moduleType;
+
+  if (!moduleType) return (): ModuleType => "esm";
+  if (typeof moduleType === "string") return () => moduleType;
+  return (modulePath: string) => moduleType(modulePath) || "esm";
+};
+
+/**
+ * Creates a string for `OnLoadResult.contents`.
+ */
+const createContents = (moduleType: ModuleType, variableName: string) => {
+  switch (moduleType) {
+    case "esm":
+      return `export default ${variableName};`;
+    case "cjs":
+      return `module.exports = ${variableName};`;
+  }
+};
+
+/**
  * Create a `Plugin` for replacing modules with corresponding global variables.
  *
  * @param globals See type declaration.
  */
 export const globalExternalsWithRegExp = (
-  globals: GlobalsMapper
+  globals: GlobalsMapper,
+  options?: Options
 ): esbuild.Plugin => {
   const { modulePathFilter, getVariableName } = globals;
+  const getModuleType = createGetModuleType(options);
 
   return {
     name: PLUGIN_NAME,
@@ -40,7 +66,10 @@ export const globalExternalsWithRegExp = (
       }));
 
       build.onLoad({ filter: /.*/, namespace: PLUGIN_NAME }, (args) => ({
-        contents: `export default ${getVariableName(args.path)};`,
+        contents: createContents(
+          getModuleType(args.path),
+          getVariableName(args.path)
+        ),
       }));
     },
   };
@@ -64,7 +93,9 @@ const mapperFromTable = (globals: Record<string, string>): GlobalsMapper => ({
  *   ```
  */
 export const globalExternals = (
-  globals: Record<string, string>
-): esbuild.Plugin => globalExternalsWithRegExp(mapperFromTable(globals));
+  globals: Record<string, string>,
+  options?: Options
+): esbuild.Plugin =>
+  globalExternalsWithRegExp(mapperFromTable(globals), options);
 
 export default globalExternals;
