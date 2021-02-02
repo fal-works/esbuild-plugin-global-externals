@@ -24,3 +24,18 @@ esbuild.build({
   plugins: [globalExternals(globals)],
 });
 ```
+
+If you prefer `RegExp` use `globalExternalsWithRegExp()` instead, however note that the `RegExp` you'll pass should be valid in Go language as well.
+
+
+## Options
+
+### Module type
+
+Default value is "esm", however this only works with default exports. You can also specify "cjs" instead, which might resolve this problem (though the emitted code may be a little redundant).
+
+```js
+globalExternals(globals, {
+  moduleType: "cjs"
+})
+```
