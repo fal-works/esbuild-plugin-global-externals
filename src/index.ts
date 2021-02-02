@@ -1,6 +1,8 @@
 import * as esbuild from "esbuild";
 import type { GlobalsMapper, ModuleType, Options } from "./types";
 
+export type { GlobalsMapper, ModuleType, Options };
+
 const PLUGIN_NAME = "global-externals";
 
 /**
