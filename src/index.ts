@@ -7,7 +7,7 @@ const PLUGIN_NAME = "global-externals";
  * Object that contains a filter and a mapping function for replacing modules
  * with corresponding global variables.
  */
-export type GlobalsMapper = {
+export type GlobalsMapper<T extends string = string> = {
   /**
    * Regular expression that match module paths to be processed by this plugin.
    *
@@ -19,18 +19,18 @@ export type GlobalsMapper = {
    * Function that returns a global variable name with which the import
    * statements of `modulePath` should be replaced.
    */
-  getVariableName: (modulePath: string) => string;
+  getVariableName: (modulePath: T) => string;
 };
 
 /**
  * Returns a function that determines module type for any specific module path.
  */
-const createGetModuleType = (options?: Options) => {
+const createGetModuleType = <T extends string>(options?: Options<T>) => {
   const moduleType = options?.moduleType;
 
   if (!moduleType) return (): ModuleType => "esm";
   if (typeof moduleType === "string") return () => moduleType;
-  return (modulePath: string) => moduleType(modulePath) || "esm";
+  return (modulePath: T) => moduleType(modulePath) || "esm";
 };
 
 /**
@@ -50,9 +50,9 @@ const createContents = (moduleType: ModuleType, variableName: string) => {
  *
  * @param globals See type declaration.
  */
-export const globalExternalsWithRegExp = (
-  globals: GlobalsMapper,
-  options?: Options
+export const globalExternalsWithRegExp = <T extends string>(
+  globals: GlobalsMapper<T>,
+  options?: Options<T>
 ): esbuild.Plugin => {
   const { modulePathFilter, getVariableName } = globals;
   const getModuleType = createGetModuleType(options);
@@ -67,8 +67,10 @@ export const globalExternalsWithRegExp = (
 
       build.onLoad({ filter: /.*/, namespace: PLUGIN_NAME }, (args) => ({
         contents: createContents(
-          getModuleType(args.path),
-          getVariableName(args.path)
+          /* eslint-disable total-functions/no-unsafe-type-assertion */
+          getModuleType(args.path as T),
+          getVariableName(args.path as T)
+          /* eslint-enable */
         ),
       }));
     },
@@ -78,9 +80,11 @@ export const globalExternalsWithRegExp = (
 /**
  * Creates a mapper object from an object-form table.
  */
-const mapperFromTable = (globals: Record<string, string>): GlobalsMapper => ({
+const mapperFromTable = <T extends string>(
+  globals: Record<T, string>
+): GlobalsMapper<T> => ({
   modulePathFilter: new RegExp(`^(?:${Object.keys(globals).join("|")})$`),
-  getVariableName: (modulePath: string) => globals[modulePath] as string,
+  getVariableName: (modulePath: T) => globals[modulePath],
 });
 
 /**
@@ -92,9 +96,9 @@ const mapperFromTable = (globals: Record<string, string>): GlobalsMapper => ({
  *   const plugins = [globalExternals(globals)];
  *   ```
  */
-export const globalExternals = (
-  globals: Record<string, string>,
-  options?: Options
+export const globalExternals = <T extends string>(
+  globals: Record<T, string>,
+  options?: Options<T>
 ): esbuild.Plugin =>
   globalExternalsWithRegExp(mapperFromTable(globals), options);
 

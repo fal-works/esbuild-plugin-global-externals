@@ -31,9 +31,11 @@
     {
       "files": ["src/**/*.ts"],
       "parserOptions": { "project": "tsconfig.json" },
+      "plugins": ["total-functions"],
       "extends": [
         "plugin:@typescript-eslint/recommended",
         "plugin:@typescript-eslint/recommended-requiring-type-checking",
+        "plugin:total-functions/recommended",
         "prettier/@typescript-eslint"
       ],
       "rules": {
