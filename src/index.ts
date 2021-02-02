@@ -17,10 +17,14 @@ const createGetModuleType = <T extends string>(options?: Options<T>) => {
 };
 
 /**
- * Creates a string for `OnLoadResult.contents`.
+ * Returns a function that creates string for `OnLoadResult.contents`.
  */
-const createContents = (moduleType: ModuleType, variableName: string) => {
-  switch (moduleType) {
+const createGetContents = <T extends string>(
+  getModuleType: (modulePath: T) => ModuleType,
+  getVariableName: (modulePath: T) => string
+) => (modulePath: T): string => {
+  const variableName = getVariableName(modulePath);
+  switch (getModuleType(modulePath)) {
     case "esm":
       return `export default ${variableName};`;
     case "cjs":
@@ -39,6 +43,7 @@ export const globalExternalsWithRegExp = <T extends string>(
 ): esbuild.Plugin => {
   const { modulePathFilter, getVariableName } = globals;
   const getModuleType = createGetModuleType(options);
+  const getContents = createGetContents(getModuleType, getVariableName);
 
   return {
     name: PLUGIN_NAME,
@@ -49,12 +54,8 @@ export const globalExternalsWithRegExp = <T extends string>(
       }));
 
       build.onLoad({ filter: /.*/, namespace: PLUGIN_NAME }, (args) => ({
-        contents: createContents(
-          /* eslint-disable total-functions/no-unsafe-type-assertion */
-          getModuleType(args.path as T),
-          getVariableName(args.path as T)
-          /* eslint-enable */
-        ),
+        // eslint-disable-next-line total-functions/no-unsafe-type-assertion
+        contents: getContents(args.path as T),
       }));
     },
   };
