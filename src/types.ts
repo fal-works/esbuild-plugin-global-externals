@@ -20,8 +20,14 @@ export type GlobalsMapper<T extends string = string> = {
 export type ModuleType = "esm" | "cjs";
 
 export type Options<T extends string> = {
-  moduleType?: ModuleType | ((modulePath: T) => ModuleType | undefined);
-  namedExports?: (modulePath: T) => readonly string[] | null;
+  moduleType?:
+    | ModuleType
+    | Record<T, ModuleType>
+    | ((modulePath: T) => ModuleType | undefined);
+  namedExports?:
+    | Record<T, readonly string[]>
+    | ((modulePath: T) => readonly string[])
+    | null;
 };
 
 export type NormalizedOptions<T extends string> = {

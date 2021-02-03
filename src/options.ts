@@ -6,9 +6,20 @@ import type { Options, NormalizedOptions, ModuleType } from "./types";
 const createGetModuleType = <T extends string>(
   moduleType: Options<T>["moduleType"]
 ): ((modulePath: T) => ModuleType) => {
-  if (!moduleType) return () => "esm";
-  if (typeof moduleType === "string") return () => moduleType;
-  return (modulePath) => moduleType(modulePath) || "esm";
+  switch (typeof moduleType) {
+    case "undefined":
+      return () => "esm";
+    case "string":
+      return () => moduleType;
+    case "object":
+      return (modulePath) => moduleType[modulePath];
+    case "function":
+      return (modulePath) => moduleType(modulePath) || "esm";
+    default:
+      throw new Error(
+        `Invalid value for options.moduleType: ${String(moduleType)}`
+      );
+  }
 };
 
 /**
@@ -17,8 +28,20 @@ const createGetModuleType = <T extends string>(
 const createGetNamedExports = <T extends string>(
   namedExports: Options<T>["namedExports"]
 ): ((modulePath: T) => readonly string[] | null) => {
-  if (!namedExports) return () => null;
-  return namedExports;
+  switch (typeof namedExports) {
+    case "undefined":
+      return () => null;
+    case "object":
+      return namedExports
+        ? (modulePath) => namedExports[modulePath]
+        : () => null;
+    case "function":
+      return namedExports;
+    default:
+      throw new Error(
+        `Invalid value for options.namedExports: ${String(namedExports)}`
+      );
+  }
 };
 
 /**
