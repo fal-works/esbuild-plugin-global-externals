@@ -6,29 +6,62 @@ export type { GlobalsMapper, ModuleType, Options };
 const PLUGIN_NAME = "global-externals";
 
 /**
- * Returns a function that determines module type for any specific module path.
+ * Returns a function that determines module type for any specific module.
  */
-const createGetModuleType = <T extends string>(options?: Options<T>) => {
-  const moduleType = options?.moduleType;
-
-  if (!moduleType) return (): ModuleType => "esm";
+const createGetModuleType = <T extends string>(
+  moduleType: Options<T>["moduleType"]
+): ((modulePath: T) => ModuleType) => {
+  if (!moduleType) return () => "esm";
   if (typeof moduleType === "string") return () => moduleType;
-  return (modulePath: T) => moduleType(modulePath) || "esm";
+  return (modulePath) => moduleType(modulePath) || "esm";
 };
 
 /**
- * Returns a function that creates string for `OnLoadResult.contents`.
+ * Returns a function that gets names of exported variables from any module.
  */
-const createGetContents = <T extends string>(
-  getModuleType: (modulePath: T) => ModuleType,
-  getVariableName: (modulePath: T) => string
-) => (modulePath: T): string => {
-  const variableName = getVariableName(modulePath);
-  switch (getModuleType(modulePath)) {
+const createGetNamedExports = <T extends string>(
+  namedExports: Options<T>["namedExports"]
+): ((modulePath: T) => readonly string[] | null) => {
+  if (!namedExports) return () => null;
+  return namedExports;
+};
+
+/**
+ * Normalizes option fields.
+ */
+const normalizeOptions = <T extends string>(options: Options<T> = {}) => ({
+  getModuleType: createGetModuleType(options.moduleType),
+  getNamedExports: createGetNamedExports(options.namedExports),
+});
+
+const createCjsContents = (variableName: string) =>
+  `module.exports = ${variableName};`;
+
+const convertNamedExport = (variableName: string) => (exportName: string) =>
+  `const ${exportName} = ${variableName}.${exportName}; export { ${exportName} };`;
+
+const createEsmContents = (
+  variableName: string,
+  namedExports: readonly string[] | null
+) => {
+  return [`export default ${variableName};`]
+    .concat([...new Set(namedExports)].map(convertNamedExport(variableName)))
+    .join("\n");
+};
+
+/**
+ * Creates value for `OnLoadResult.contents`.
+ */
+const createContents = (
+  moduleType: ModuleType,
+  variableName: string,
+  namedExports: readonly string[] | null
+): string => {
+  switch (moduleType) {
     case "esm":
-      return `export default ${variableName};`;
+      return createEsmContents(variableName, namedExports);
     case "cjs":
-      return `module.exports = ${variableName};`;
+      return createCjsContents(variableName);
   }
 };
 
@@ -42,8 +75,7 @@ export const globalExternalsWithRegExp = <T extends string>(
   options?: Options<T>
 ): esbuild.Plugin => {
   const { modulePathFilter, getVariableName } = globals;
-  const getModuleType = createGetModuleType(options);
-  const getContents = createGetContents(getModuleType, getVariableName);
+  const { getModuleType, getNamedExports } = normalizeOptions(options);
 
   return {
     name: PLUGIN_NAME,
@@ -53,10 +85,18 @@ export const globalExternalsWithRegExp = <T extends string>(
         namespace: PLUGIN_NAME,
       }));
 
-      build.onLoad({ filter: /.*/, namespace: PLUGIN_NAME }, (args) => ({
+      build.onLoad({ filter: /.*/, namespace: PLUGIN_NAME }, (args) => {
         // eslint-disable-next-line total-functions/no-unsafe-type-assertion
-        contents: getContents(args.path as T),
-      }));
+        const modulePath = args.path as T; // type T since already filtered
+
+        const variableName = getVariableName(modulePath);
+        const moduleType = getModuleType(modulePath);
+        const namedExports = getNamedExports(modulePath);
+
+        return {
+          contents: createContents(moduleType, variableName, namedExports),
+        };
+      });
     },
   };
 };

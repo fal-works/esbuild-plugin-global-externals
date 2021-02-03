@@ -32,10 +32,26 @@ If you prefer `RegExp` use `globalExternalsWithRegExp()` instead, however note t
 
 ### Module type
 
-Default value is "esm", however this only works with default exports. You can also specify "cjs" instead, which might resolve this problem (though the emitted code may be a little redundant).
+Either `"esm"` (default) or `"cjs"`.
+
+You can also provide a function that receives a module path and returns `"esm"` or `"cjs"`.
 
 ```js
 globalExternals(globals, {
   moduleType: "cjs"
+})
+```
+
+### Named exports
+
+Provide a function that receives a module path and returns either `null` or names of exported variables.
+
+Without this option, the module type "esm" works only with modules that are imported with default import.
+
+No effect (and no need to use this option) if the module type is `"cjs"`.
+
+```js
+globalExternals(globals, {
+  namedExports: (modulePath) => modulePath === "someModule" ? ["someExportedVariableName"] : null
 })
 ```
