@@ -11,34 +11,40 @@ export type GlobalsMapper<T extends string = string> = {
   modulePathFilter: RegExp;
 
   /**
-   * Function that returns a global variable name with which the import
-   * statements of `modulePath` should be replaced.
+   * Function that returns either a corresponding global variable name or a
+   * `ModuleInfo` object for the module at `modulePath`.
    */
-  getVariableName: (modulePath: T) => string;
+  getModuleInfo: (modulePath: T) => string | ModuleInfo;
 };
 
 export type ModuleType = "esm" | "cjs";
 
-export type Options<T extends string> = {
+/**
+ * Information that discribes a module to be imported.
+ */
+export type ModuleInfo = {
   /**
-   * Type (either `"esm"` or `"cjs"`) of each module. Defaults to `"esm"`.
+   * Global variable name with which the import statements of the module
+   * should be replaced.
    */
-  moduleType?:
-    | ModuleType
-    | Partial<Record<T, ModuleType>>
-    | ((modulePath: T) => ModuleType);
+  varName: string;
 
   /**
-   * Names of variables that are exported from each module.
-   * Defaults to `null` (no named exports).
-   * No effect if `moduleType` is `"cjs"`.
+   * Type (either `"esm"` or `"cjs"`) that determines the internal behavior of
+   * this plugin. Defaults to `"esm"`.
    */
-  namedExports?:
-    | Partial<Record<T, readonly string[]>>
-    | ((modulePath: T) => readonly string[] | null);
+  type?: ModuleType;
+
+  /**
+   * Names of variables that are exported from the module and may be imported
+   * from another module.
+   * No effect if `type` is `"cjs"`.
+   */
+  namedExports?: readonly string[];
 };
 
-export type NormalizedOptions<T extends string> = {
-  getModuleType: (modulePath: T) => ModuleType;
-  getNamedExports: (modulePath: T) => readonly string[] | null;
+export type NormalizedModuleInfo = {
+  varName: string;
+  type: ModuleType;
+  namedExports: readonly string[] | null;
 };

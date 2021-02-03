@@ -1,4 +1,4 @@
-import type { ModuleType } from "./types";
+import type { NormalizedModuleInfo } from "./types";
 
 const createCjsContents = (variableName: string) =>
   `module.exports = ${variableName};`;
@@ -18,15 +18,13 @@ const createEsmContents = (
 /**
  * Creates value for `OnLoadResult.contents`.
  */
-export const createContents = (
-  moduleType: ModuleType,
-  variableName: string,
-  namedExports: readonly string[] | null
-): string => {
-  switch (moduleType) {
+export const createContents = (moduleInfo: NormalizedModuleInfo): string => {
+  const { type, varName, namedExports } = moduleInfo;
+
+  switch (type) {
     case "esm":
-      return createEsmContents(variableName, namedExports);
+      return createEsmContents(varName, namedExports);
     case "cjs":
-      return createCjsContents(variableName);
+      return createCjsContents(varName);
   }
 };

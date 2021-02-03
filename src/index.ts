@@ -1,11 +1,24 @@
 import type * as esbuild from "esbuild";
-import type { GlobalsMapper, ModuleType, Options } from "./types";
-import { normalizeOptions } from "./options.js";
+import type {
+  GlobalsMapper,
+  ModuleType,
+  ModuleInfo,
+  NormalizedModuleInfo,
+} from "./types";
 import { createContents } from "./on-load.js";
 
-export type { GlobalsMapper, ModuleType, Options };
+export type { GlobalsMapper, ModuleType, ModuleInfo, NormalizedModuleInfo };
 
 const PLUGIN_NAME = "global-externals";
+
+const normalizeModuleInfo = (
+  value: string | ModuleInfo
+): NormalizedModuleInfo => {
+  const { type = "esm", varName, namedExports = null } =
+    typeof value === "string" ? { varName: value } : value;
+
+  return { type, varName, namedExports };
+};
 
 /**
  * Create a `Plugin` for replacing modules with corresponding global variables.
@@ -13,11 +26,9 @@ const PLUGIN_NAME = "global-externals";
  * @param globals See type declaration.
  */
 export const globalExternalsWithRegExp = <T extends string>(
-  globals: GlobalsMapper<T>,
-  options?: Options<T>
+  globals: GlobalsMapper<T>
 ): esbuild.Plugin => {
-  const { modulePathFilter, getVariableName } = globals;
-  const { getModuleType, getNamedExports } = normalizeOptions(options);
+  const { modulePathFilter, getModuleInfo } = globals;
 
   return {
     name: PLUGIN_NAME,
@@ -29,15 +40,9 @@ export const globalExternalsWithRegExp = <T extends string>(
 
       build.onLoad({ filter: /.*/, namespace: PLUGIN_NAME }, (args) => {
         // eslint-disable-next-line total-functions/no-unsafe-type-assertion
-        const modulePath = args.path as T; // type T since already filtered
-
-        const variableName = getVariableName(modulePath);
-        const moduleType = getModuleType(modulePath);
-        const namedExports = getNamedExports(modulePath);
-
-        return {
-          contents: createContents(moduleType, variableName, namedExports),
-        };
+        const modulePath = args.path as T;
+        const moduleInfo = normalizeModuleInfo(getModuleInfo(modulePath));
+        return { contents: createContents(moduleInfo) };
       });
     },
   };
@@ -46,22 +51,28 @@ export const globalExternalsWithRegExp = <T extends string>(
 /**
  * Create a `Plugin` for replacing modules with corresponding global variables.
  *
- * @param globals Object that maps module paths to variable names, e.g.:
- *   ```
- *   const globals = { jquery: "$" };
- *   const plugins = [globalExternals(globals)];
- *   ```
+ * @param globals Object that maps between the two below:
+ *
+ * - From: Module path used in any `import` statements that should be replaced
+ *   with a global variable.
+ * - To: String for a global variable name, or any `ModuleInfo` object
+ *   which also includes the global variable name.
+ *
+ * @example
+ *
+ * ```
+ * const plugins = [globalExternals({ jquery: "$" })];
+ * ```
  */
 export const globalExternals = <T extends string>(
-  globals: Record<T, string>,
-  options?: Options<T>
+  globals: Record<T, string | ModuleInfo>
 ): esbuild.Plugin => {
   const normalizedGlobals: GlobalsMapper<T> = {
     modulePathFilter: new RegExp(`^(?:${Object.keys(globals).join("|")})$`),
-    getVariableName: (modulePath: T) => globals[modulePath],
+    getModuleInfo: (modulePath: T) => globals[modulePath],
   };
 
-  return globalExternalsWithRegExp(normalizedGlobals, options);
+  return globalExternalsWithRegExp(normalizedGlobals);
 };
 
 export default globalExternals;

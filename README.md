@@ -28,7 +28,9 @@ esbuild.build({
 If you prefer `RegExp` use `globalExternalsWithRegExp()` instead, however note that the `RegExp` you'll pass should be valid in Go language as well.
 
 
-## Options
+## Configuration
+
+Instead of simply providing variable names, you can pass `ModuleInfo` objects for configuring the loading behavior.
 
 ### Module type
 
