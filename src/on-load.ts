@@ -8,16 +8,15 @@ const createEsmContents = (
   namedExports: readonly string[] | null,
   defaultExport: boolean
 ) => {
-  const defaultExportCode = defaultExport
-    ? [`export default ${variableName};`]
-    : [];
-  const namedExportCode = [...new Set(namedExports)].map(
-    (exportName: string) =>
-      `const ${exportName} = ${variableName}.${exportName};` +
-      `export { ${exportName} };`
-  );
+  const codeElements = defaultExport ? [`export default ${variableName};`] : [];
 
-  return defaultExportCode.concat(namedExportCode).join("\n");
+  if (namedExports && namedExports.length) {
+    const exportNames = [...new Set(namedExports)].join(", ");
+    codeElements.push(`const { ${exportNames} } = ${variableName};`);
+    codeElements.push(`export { ${exportNames} };`);
+  }
+
+  return codeElements.join("\n");
 };
 
 /**
