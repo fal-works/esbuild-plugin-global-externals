@@ -23,3 +23,8 @@ export type Options<T extends string> = {
   moduleType?: ModuleType | ((modulePath: T) => ModuleType | undefined);
   namedExports?: (modulePath: T) => readonly string[] | null;
 };
+
+export type NormalizedOptions<T extends string> = {
+  getModuleType: (modulePath: T) => ModuleType;
+  getNamedExports: (modulePath: T) => readonly string[] | null;
+};
