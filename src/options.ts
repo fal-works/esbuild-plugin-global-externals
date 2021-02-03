@@ -14,7 +14,7 @@ const createGetModuleType = <T extends string>(
     case "object":
       return (modulePath) => moduleType[modulePath];
     case "function":
-      return (modulePath) => moduleType(modulePath) || "esm";
+      return moduleType;
     default:
       throw new Error(
         `Invalid value for options.moduleType: ${String(moduleType)}`

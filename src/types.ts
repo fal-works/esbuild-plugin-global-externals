@@ -23,10 +23,10 @@ export type Options<T extends string> = {
   moduleType?:
     | ModuleType
     | Record<T, ModuleType>
-    | ((modulePath: T) => ModuleType | undefined);
+    | ((modulePath: T) => ModuleType);
   namedExports?:
     | Record<T, readonly string[]>
-    | ((modulePath: T) => readonly string[]);
+    | ((modulePath: T) => readonly string[] | null);
 };
 
 export type NormalizedOptions<T extends string> = {
