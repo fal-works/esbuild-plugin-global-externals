@@ -1,11 +1,11 @@
-import type { Options, NormalizedOptions, ModuleType } from "./types";
+import type { Options, NormalizedOptions } from "./types";
 
 /**
  * Returns a function that determines module type for any specific module.
  */
 const createGetModuleType = <T extends string>(
   moduleType: Options<T>["moduleType"]
-): ((modulePath: T) => ModuleType) => {
+): NormalizedOptions<T>["getModuleType"] => {
   switch (typeof moduleType) {
     case "undefined":
       return () => "esm";
@@ -27,7 +27,7 @@ const createGetModuleType = <T extends string>(
  */
 const createGetNamedExports = <T extends string>(
   namedExports: Options<T>["namedExports"]
-): ((modulePath: T) => readonly string[] | null) => {
+): NormalizedOptions<T>["getNamedExports"] => {
   switch (typeof namedExports) {
     case "undefined":
       return () => null;
