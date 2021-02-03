@@ -39,6 +39,7 @@
     "prebuild": "rimraf lib",
     "build": "tsc && npm run format:lib",
     "preformat:lib": "eslint --fix --no-ignore lib/**/*.{js,ts}",
-    "format:lib": "prettier --write lib/**/*.{js,ts}"
+    "format:lib": "prettier --write lib/**/*.{js,ts}",
+    "lint": "eslint src/"
   }
 }
