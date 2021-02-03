@@ -26,8 +26,7 @@ export type Options<T extends string> = {
     | ((modulePath: T) => ModuleType | undefined);
   namedExports?:
     | Record<T, readonly string[]>
-    | ((modulePath: T) => readonly string[])
-    | null;
+    | ((modulePath: T) => readonly string[]);
 };
 
 export type NormalizedOptions<T extends string> = {

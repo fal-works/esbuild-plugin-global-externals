@@ -32,9 +32,7 @@ const createGetNamedExports = <T extends string>(
     case "undefined":
       return () => null;
     case "object":
-      return namedExports
-        ? (modulePath) => namedExports[modulePath]
-        : () => null;
+      return (modulePath) => namedExports[modulePath];
     case "function":
       return namedExports;
     default:
