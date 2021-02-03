@@ -1,22 +1,3 @@
-/**
- * Object that contains a filter and a mapping function for replacing modules
- * with corresponding global variables.
- */
-export type GlobalsMapper<T extends string = string> = {
-  /**
-   * Regular expression that match module paths to be processed by this plugin.
-   *
-   * @see <https://esbuild.github.io/plugins/>
-   */
-  modulePathFilter: RegExp;
-
-  /**
-   * Function that returns either a corresponding global variable name or a
-   * `ModuleInfo` object for the module at `modulePath`.
-   */
-  getModuleInfo: (modulePath: T) => string | ModuleInfo;
-};
-
 export type ModuleType = "esm" | "cjs";
 
 /**
@@ -47,4 +28,13 @@ export type NormalizedModuleInfo = {
   varName: string;
   type: ModuleType;
   namedExports: readonly string[] | null;
+};
+
+export const normalizeModuleInfo = (
+  value: string | ModuleInfo
+): NormalizedModuleInfo => {
+  const { type = "esm", varName, namedExports = null } =
+    typeof value === "string" ? { varName: value } : value;
+
+  return { type, varName, namedExports };
 };

@@ -1,4 +1,4 @@
-import type { NormalizedModuleInfo } from "./types";
+import type { NormalizedModuleInfo } from "./module-info";
 
 const createCjsContents = (variableName: string) =>
   `module.exports = ${variableName};`;
