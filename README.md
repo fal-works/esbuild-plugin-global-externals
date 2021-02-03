@@ -34,7 +34,7 @@ If you prefer `RegExp` use `globalExternalsWithRegExp()` instead, however note t
 
 Either `"esm"` (default) or `"cjs"`.
 
-You can also provide a function that receives a module path and returns `"esm"` or `"cjs"`.
+You can also provide an object or a function for specifying the type for each module individually.
 
 ```js
 globalExternals(globals, {
@@ -44,7 +44,7 @@ globalExternals(globals, {
 
 ### Named exports
 
-Provide a function that receives a module path and returns either `null` or names of exported variables.
+An object or a function that specifies names of variables exported from each module.
 
 Without this option, the module type "esm" works only with modules that are imported with default import.
 
@@ -52,6 +52,8 @@ No effect (and no need to use this option) if the module type is `"cjs"`.
 
 ```js
 globalExternals(globals, {
-  namedExports: (modulePath) => modulePath === "someModule" ? ["someExportedVariableName"] : null
+  namedExports: {
+    someModule: ["someExportedVariableName"]
+  }
 })
 ```
