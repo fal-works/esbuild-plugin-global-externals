@@ -2,7 +2,23 @@
 
 [esbuild](https://esbuild.github.io/) plugin for replacing imports with global variables.
 
-Similar to `output.globals` option of [Rollup](https://rollupjs.org/).
+This:
+
+```js
+import p5 from "p5";
+new p5();
+```
+
+transpiles to:
+
+```js
+// Here a variable `p5` should be defined globally (typically via UMD)
+var p5_default = p5;
+new p5_default();
+```
+
+
+Similar to (but not the same as) `output.globals` option of [Rollup](https://rollupjs.org/).
 
 See also: [evanw/esbuild#337](https://github.com/evanw/esbuild/issues/337)
 
@@ -30,32 +46,49 @@ If you prefer `RegExp` use `globalExternalsWithRegExp()` instead, however note t
 
 ## Configuration
 
-Instead of simply providing variable names, you can pass `ModuleInfo` objects for configuring the loading behavior.
+Instead of simply providing variable names only, you can pass `ModuleInfo` objects to configure the loading behavior for each module.
 
 ### Module type
 
 Either `"esm"` (default) or `"cjs"`.
 
-You can also provide an object or a function for specifying the type for each module individually.
+This determines the internal behavior of this plugin when loading modules (which affects the code after bundling as well).
 
 ```js
-globalExternals(globals, {
-  moduleType: "cjs"
+globalExternals({
+  "someModulePath": {
+    varName: "someGlobalVar",
+    type: "cjs"
+  }
 })
 ```
 
-### Named exports
+### Named/default export
 
-An object or a function that specifies names of variables exported from each module.
+If `type: "esm"` (which is the default) and if you're doing named import with some modules in question, you have to tell which variables from each module should be importable.
 
-Without this option, the module type "esm" works only with modules that are imported with default import.
+Additionally, if you don't do default import/export, you can prevent emitting code for this with `defaultExport: false`.
 
-No effect (and no need to use this option) if the module type is `"cjs"`.
+Both have no effects if `type: "cjs"` (which should work fine with named imports as well).
 
 ```js
-globalExternals(globals, {
-  namedExports: {
-    someModule: ["someExportedVariableName"]
+globalExternals({
+  "someModulePath": {
+    varName: "someGlobalVar",
+    namedExports: ["someExportedVar"],
+    defaultExport: false
   }
 })
+```
+
+The example above enables the following even if `type: "esm"`:
+
+```js
+import { someExportedVar } from "someModulePath";
+```
+
+which transpiles to:
+
+```js
+var someExportedVar = someGlobalVar.someExportedVar;
 ```
