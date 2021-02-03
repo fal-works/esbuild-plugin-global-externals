@@ -12,7 +12,7 @@ const createGetModuleType = <T extends string>(
     case "string":
       return () => moduleType;
     case "object":
-      return (modulePath) => moduleType[modulePath];
+      return (modulePath) => moduleType[modulePath] ?? "esm";
     case "function":
       return moduleType;
     default:
@@ -32,7 +32,7 @@ const createGetNamedExports = <T extends string>(
     case "undefined":
       return () => null;
     case "object":
-      return (modulePath) => namedExports[modulePath];
+      return (modulePath) => namedExports[modulePath] ?? null;
     case "function":
       return namedExports;
     default:

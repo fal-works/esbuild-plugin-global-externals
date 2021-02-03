@@ -22,10 +22,10 @@ export type ModuleType = "esm" | "cjs";
 export type Options<T extends string> = {
   moduleType?:
     | ModuleType
-    | Record<T, ModuleType>
+    | Partial<Record<T, ModuleType>>
     | ((modulePath: T) => ModuleType);
   namedExports?:
-    | Record<T, readonly string[]>
+    | Partial<Record<T, readonly string[]>>
     | ((modulePath: T) => readonly string[] | null);
 };
 
