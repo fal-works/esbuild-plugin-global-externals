@@ -22,19 +22,27 @@ export type ModuleInfo = {
    * No effect if `type` is `"cjs"`.
    */
   namedExports?: readonly string[];
+
+  /**
+   * Set to `false` to prevent emitting code for default import/export
+   * (which you won't need to unless you are finicky).
+   * Defaults to `true`. No effect if `type` is `"cjs"`.
+   */
+  defaultExport?: boolean;
 };
 
 export type NormalizedModuleInfo = {
   varName: string;
   type: ModuleType;
   namedExports: readonly string[] | null;
+  defaultExport: boolean;
 };
 
 export const normalizeModuleInfo = (
   value: string | ModuleInfo
 ): NormalizedModuleInfo => {
-  const { type = "esm", varName, namedExports = null } =
+  const { type = "esm", varName, namedExports = null, defaultExport = true } =
     typeof value === "string" ? { varName: value } : value;
 
-  return { type, varName, namedExports };
+  return { type, varName, namedExports, defaultExport };
 };
