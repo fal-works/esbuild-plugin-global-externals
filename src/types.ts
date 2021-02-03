@@ -20,10 +20,19 @@ export type GlobalsMapper<T extends string = string> = {
 export type ModuleType = "esm" | "cjs";
 
 export type Options<T extends string> = {
+  /**
+   * Type (either `"esm"` or `"cjs"`) of each module. Defaults to `"esm"`.
+   */
   moduleType?:
     | ModuleType
     | Partial<Record<T, ModuleType>>
     | ((modulePath: T) => ModuleType);
+
+  /**
+   * Names of variables that are exported from each module.
+   * Defaults to `null` (no named exports).
+   * No effect if `moduleType` is `"cjs"`.
+   */
   namedExports?:
     | Partial<Record<T, readonly string[]>>
     | ((modulePath: T) => readonly string[] | null);
