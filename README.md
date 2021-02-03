@@ -2,6 +2,13 @@
 
 [esbuild](https://esbuild.github.io/) plugin for replacing imports with global variables.
 
+Developed with: esbuild v0.8.39
+
+Similar to (but not the same as) `output.globals` option of [Rollup](https://rollupjs.org/). See also: [evanw/esbuild#337](https://github.com/evanw/esbuild/issues/337)
+
+
+## TL;DR
+
 This:
 
 ```js
@@ -16,11 +23,6 @@ transpiles to:
 var p5_default = p5;
 new p5_default();
 ```
-
-
-Similar to (but not the same as) `output.globals` option of [Rollup](https://rollupjs.org/).
-
-See also: [evanw/esbuild#337](https://github.com/evanw/esbuild/issues/337)
 
 
 ## Usage example
@@ -65,7 +67,7 @@ globalExternals({
 
 ### Named/default export
 
-If `type: "esm"` (which is the default) and if you're doing named import with some modules in question, you have to tell which variables from each module should be importable.
+If `type: "esm"` and also if you're doing named import with some modules in question, you have to tell which variables from each module should be importable.
 
 Additionally, if you don't do default import/export, you can prevent emitting code for this with `defaultExport: false`.
 
