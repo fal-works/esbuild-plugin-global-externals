@@ -11,6 +11,7 @@
   "bugs": {
     "url": "https://github.com/fal-works/esbuild-plugin-global-externals/issues"
   },
+  "type": "module",
   "files": [
     "lib",
     "src"
@@ -21,7 +22,7 @@
     "import": "./lib/index.js",
     "require": "./lib/index.cjs"
   },
-  "type": "module",
+  "types": "lib/index.d.ts",
   "directories": {
     "lib": "lib"
   },
