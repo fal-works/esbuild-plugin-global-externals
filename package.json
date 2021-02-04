@@ -1,7 +1,7 @@
 {
   "name": "@fal-works/esbuild-plugin-global-externals",
   "description": "esbuild plugin for replacing imports with global variables.",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "license": "MIT",
   "author": "FAL",
   "keywords": [
