@@ -45,6 +45,7 @@
     "preformat:lib:esm": "eslint --fix --no-ignore lib/**/*.{js,ts}",
     "format:lib:esm": "prettier --write lib/**/*.{js,ts}",
     "build:cjs": "esbuild src/index.ts --outfile=lib/index.cjs --format=cjs --platform=node --bundle --minify",
-    "lint": "eslint src/"
+    "lint": "eslint src/",
+    "test": "node test/test.js"
   }
 }
