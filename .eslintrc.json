@@ -14,38 +14,9 @@
   },
 
   "overrides": [
-    // config with basic rules
+    // all files to be preformatted
     {
-      "files": ["src/**/*.ts"],
-      "extends": ["eslint:recommended", "prettier"]
-    },
-
-    // config for TypeScript
-    {
-      "files": ["**/*.ts"],
-      "plugins": ["@typescript-eslint"],
-      "parser": "@typescript-eslint/parser"
-    },
-
-    // config for source code in TypeScript
-    {
-      "files": ["src/**/*.ts"],
-      "parserOptions": { "project": "tsconfig.json" },
-      "plugins": ["total-functions"],
-      "extends": [
-        "plugin:@typescript-eslint/recommended",
-        "plugin:@typescript-eslint/recommended-requiring-type-checking",
-        "plugin:total-functions/recommended",
-        "prettier/@typescript-eslint"
-      ],
-      "rules": {
-        "no-fallthrough": "off" // already checked by TypeScript
-      }
-    },
-
-    // config just for pre-formatting purpose
-    {
-      "files": ["**/*.js", "lib/**/*.ts"],
+      "files": ["**/*.js", "lib/**/*.d.ts"],
       "rules": {
         "lines-around-comment": [
           "error",
@@ -58,6 +29,35 @@
             "allowClassStart": true
           }
         ]
+      }
+    },
+
+    // all TypeScript files
+    {
+      "files": ["**/*.ts"],
+      "plugins": ["@typescript-eslint"],
+      "parser": "@typescript-eslint/parser"
+    },
+
+    // basic rules
+    {
+      "files": ["src/**/*.ts"],
+      "extends": ["eslint:recommended", "prettier"]
+    },
+
+    // rules for source code in TypeScript
+    {
+      "files": ["src/**/*.ts"],
+      "parserOptions": { "project": "tsconfig.json" },
+      "plugins": ["total-functions"],
+      "extends": [
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",
+        "plugin:total-functions/recommended",
+        "prettier/@typescript-eslint"
+      ],
+      "rules": {
+        "no-fallthrough": "off" // already checked by TypeScript
       }
     }
   ]
