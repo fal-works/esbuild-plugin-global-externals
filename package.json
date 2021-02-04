@@ -26,7 +26,7 @@
     "lib": "lib"
   },
   "dependencies": {
-    "esbuild": "^0.8.39"
+    "esbuild": "^0.8.40"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "4.14.2",

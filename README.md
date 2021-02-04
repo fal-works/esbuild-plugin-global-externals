@@ -2,7 +2,7 @@
 
 [esbuild](https://esbuild.github.io/) plugin for replacing imports with global variables.
 
-Developed with: esbuild v0.8.39
+Developed with: esbuild v0.8.40
 
 Similar to (but not the same as) `output.globals` option of [Rollup](https://rollupjs.org/). See also: [evanw/esbuild#337](https://github.com/evanw/esbuild/issues/337)
 
