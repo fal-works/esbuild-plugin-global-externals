@@ -54,7 +54,7 @@
         "plugin:@typescript-eslint/recommended",
         "plugin:@typescript-eslint/recommended-requiring-type-checking",
         "plugin:total-functions/recommended",
-        "prettier/@typescript-eslint"
+        "prettier"
       ],
       "rules": {
         "no-fallthrough": "off" // already checked by TypeScript
