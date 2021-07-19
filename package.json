@@ -26,9 +26,6 @@
   "directories": {
     "lib": "lib"
   },
-  "dependencies": {
-    "esbuild": "^0.8.40"
-  },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "4.14.2",
     "@typescript-eslint/parser": "^4.14.2",
@@ -37,7 +34,8 @@
     "eslint-plugin-total-functions": "^4.7.2",
     "prettier": "^2.2.1",
     "rimraf": "^3.0.2",
-    "typescript": "^4.1.3"
+    "typescript": "^4.1.3",
+    "esbuild": "^0.12.15"
   },
   "scripts": {
     "prebuild": "rimraf lib",
